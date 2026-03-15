@@ -1,5 +1,6 @@
 clear all; close all;
 
+
 aa = 40;        % Side length of square grid
 N = aa*aa;      % Number of neurons
 tlen = 20000;
@@ -8,22 +9,36 @@ msize = tlen;%/tdiv +1;
 
 x = zeros(1,N);
 xs = zeros(msize,N);
-
+z = x;
 We = (eye(N));
 Wi = We;
 
- Ae = 0.8;      % Excitatory kernal max height
- ke = 1;        % Excitatory kernel width
- Ai = 0.05;   % Inhibitory kernal max height (Play with this parameter!)
- ki = 3;        % Inhibitory kernal width
- 
+
+h = 0.001;
+B = 10; C = 10;
+
+
+Ae = 0.6;      % Excitatory kernal max height
+ke = 1;        % Excitatory kernel width
+Ai = 0.02;   % Inhibitory kernal max height (Play with this parameter!)
+ki = 3;        % Inhibitory kernal width
+
+
+ra = 0.01;
+recov = 1.2; % Play with this parameter :)
+rstrength = 0.5; % And this one
+zinh = 10;
+toff = 0.4;
+params = [aa h B C Ae ke Ai ki ra recov rstrength zinh tlen toff];
+
+
 distan = zeros(N);
 kk = 0;
 pos = zeros(N,2);
 for ii = 1:aa
     for jj = 1:aa
         kk = kk +1;
-      pos(kk,:) = [ii jj];
+        pos(kk,:) = [ii jj];
     end
 end
 tic
@@ -44,50 +59,51 @@ end
 toc
 
 %Wi = 0.*Wi;
+%Inpshape = (1:aa)'*(1:aa)/N;
+%Inpshape = ((1:aa)./aa)'*ones(1,aa);
+%Inpshape  = zeros(aa);
+%Inpshape(10,10) = 2.75;
+%Inpshape(11,14) = 2.75;
 
-Inp = 0*rand(msize,N);
-%Inp = round(max(rand(tlen,N) - 0.45,0));
-h = 0.001;
-B = 10; C = 10;
-z = x;
-p =10;
+%Inpshape((aa/2-2):(aa/2+2),(aa/2-2):(aa/2+2)) = 0.03;
 
-ra = 0.01;
-recov = 0.7; % Play with this parameter :)
-rstrength = 0.5; % And this one
+%Inpshape(1:3,1:3) = 0.03;
+%Inpshape = 1.5*round(max(rand(aa)-0.492,0));
+%if max(max(Inpshape))<0.1
+%    Inpshape(2,2) =1;
+%end
 
-%Inpy = round(max(rand(1,N)-0.49,0));
-Inp(:,30:50) = rand(tlen,length(30:50));
-%Inp(:,100:500) = rand(tlen,length(100:500));
-%Inp(:,1) = 1;
-%Inp(:,N) = 1;
+Inp = 0.1*round(max(rand(tlen,N) - 0.499,0));
 
-%Inp(:, 188) = 1;
-
-Inp(round(msize*0.5):msize,:) = 0; %Input shuts off half-way though the trial
-ii = 1;
+% t1 = 1+round(rand*(tlen*.25));
+% t2 = 1+round(rand*(tlen*.25));
+% Inp(t1:t1+1000,(1+round(rand*(N-1)))) = 0.1;
+% Inp(t2:t2+1000,(1+round(rand*(N-1)))) = 0.1;
+%Inp = 0.1*(rand(tlen,N));
 tic
+
+Inp((tlen*toff):tlen,:)=0;
 for t = 1:tlen
-    ii = t;
-    %ii = ii + (1-sign(mod(t,tdiv)));
-    %Inp(t,:) = Inpy;
+    %ii = t;
+    
+    %Inp(t,:) = fac(t).*Inpshape(:);
     %td = max(1, t-500);
-   y = max(x,0);
-   %inh = xs(td,:);
-   inh = y;
-   
-    x = x + h.*((B-x).*(Inp(ii,:)  + (y)*We) - (x+C).*( (y*Wi) + rstrength.*z) -x*ra );
-   
+    y = max(x,0);
+    %inh = xs(td,:);
+    inh = y;
+    
+    x = x + h.*((B-x).*(Inp(t,:)  + (y)*We) - (x+C).*( (y*Wi) + rstrength.*z) -x*ra );
+    
     x = max(x,0);
     x = min(B,x);
     
     %z= z + rr.*h.*(x -z);
-    z = z + recov*h*((B-z).*inh - 10*z.*(1-sign(inh)));
+    z = z + recov*h*((B-z).*inh - zinh*z.*(1-sign(inh)));
     z = max(z,0);
     z= min(B,z);
     
     
-    xs(ii,:) = max(x,0);
+    xs(t,:) = max(x,0);
 end
 toc
 
@@ -123,7 +139,5 @@ axis equal
 axis off
 title('Inhibitory kernel')
 
-%file_name=uiputfile('*.gif','Save as animated GIF');
-%gif_2D(xs,aa,file_name)
-
-show_2D(xs,Inp,aa)
+%gifmaker_2D(xs,aa,file_name,params)
+show2D(xs,Inp,aa)

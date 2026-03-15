@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wta2d"
+version = "0.1.0"
+description = "2D Winner-Take-All neural network (Python port of Matlab WTA_2D scripts)"
+readme = "wta2d/README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "numpy>=1.20",
+    "matplotlib>=3.4",
+    "imageio>=2.9",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["wta2d"]
+
+# Exclude non-Python files from the installed wta2d package
+[tool.setuptools.exclude-package-data]
+wta2d = ["*.md", "*.txt"]

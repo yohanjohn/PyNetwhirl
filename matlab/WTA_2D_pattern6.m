@@ -1,7 +1,6 @@
 clear all; close all;
-%file_name=uiputfile('*.gif','Save as animated GIF');
 
-aa = 20;        % Side length of square grid
+aa = 40;        % Side length of square grid
 N = aa*aa;      % Number of neurons
 tlen = 20000;
 %tdiv = 50;
@@ -13,7 +12,7 @@ xs = zeros(msize,N);
 We = (eye(N));
 Wi = We;
 
- Ae = 0.6;      % Excitatory kernal max height
+ Ae = 0.8;      % Excitatory kernal max height
  ke = 1;        % Excitatory kernel width
  Ai = 0.05;   % Inhibitory kernal max height (Play with this parameter!)
  ki = 3;        % Inhibitory kernal width
@@ -46,7 +45,7 @@ toc
 
 %Wi = 0.*Wi;
 
-Inp = 0.1*rand(msize,N);
+Inp = 0*rand(msize,N);
 %Inp = round(max(rand(tlen,N) - 0.45,0));
 h = 0.001;
 B = 10; C = 10;
@@ -55,19 +54,17 @@ p =10;
 
 ra = 0.01;
 recov = 0.7; % Play with this parameter :)
-rstrength = 0.25; % And this one
+rstrength = 0.5; % And this one
 
 %Inpy = round(max(rand(1,N)-0.49,0));
-%cc = 300:320;
-%Inp(:,cc) = rand(tlen,length(cc));
+Inp(:,30:50) = rand(tlen,length(30:50));
 %Inp(:,100:500) = rand(tlen,length(100:500));
 %Inp(:,1) = 1;
 %Inp(:,N) = 1;
 
-%Inp(:, 170:200) = 100;
-%Inp(:, 220:250) = 40;
+%Inp(:, 188) = 1;
 
-Inp(round(msize*0.4):msize,:) = 0; %Input shuts off half-way though the trial
+Inp(round(msize*0.5):msize,:) = 0; %Input shuts off half-way though the trial
 ii = 1;
 tic
 for t = 1:tlen
@@ -126,5 +123,7 @@ axis equal
 axis off
 title('Inhibitory kernel')
 
+%file_name=uiputfile('*.gif','Save as animated GIF');
 %gif_2D(xs,aa,file_name)
+
 show_2D(xs,Inp,aa)
