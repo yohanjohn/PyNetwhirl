@@ -234,8 +234,11 @@ def save_gif(
         ax.imshow(frame, aspect="equal", vmin=vmin, vmax=vmax, cmap=cmap)
         ax.axis("off")
         fig.canvas.draw()
-        buf = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
-        buf = buf.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+        #buf = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+        #buf = buf.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+        buf = np.frombuffer(fig.canvas.tostring_argb(), dtype=np.uint8)
+        buf = buf.reshape(fig.canvas.get_width_height()[::-1] + (4,))
+        buf = buf[:, :, 1:] 
 
         # Optionally crop away uniform background, leaving a minimal border
         if border is not None and border >= 0:
